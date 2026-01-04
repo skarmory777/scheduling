@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  password String
+  name     String
+  phone    String?
+  role     Role     @default(CLIENT)
+  isActive Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamentos
+  clientAppointments       Appointment[] @relation("ClientAppointments")
+  professionalAppointments Appointment[] @relation("ProfessionalAppointments")
+  availability             Availability[]
+  refreshTokens            RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique @db.VarChar(512)
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("refresh_tokens")
+}
+
+enum Role {
+  CLIENT
+  PROFESSIONAL
+  ADMIN
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CANCELLED
+  COMPLETED
+}
+
+enum DayOfWeek {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String
+  description String?  @db.Text
+  duration    Int      // Duração em minutos
+  price       Decimal  @db.Decimal(10, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  appointments Appointment[]
+
+  @@map("services")
+}
+
+model Appointment {
+  id             String            @id @default(uuid())
+  serviceId      String
+  clientId       String
+  professionalId String
+  date           DateTime          @db.Date
+  startTime      String            // Formato HH:MM
+  endTime        String            // Formato HH:MM
+  status         AppointmentStatus @default(SCHEDULED)
+  cancelReason   String?           @db.Text
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  // Relacionamentos
+  service      Service @relation(fields: [serviceId], references: [id])
+  client       User    @relation("ClientAppointments", fields: [clientId], references: [id])
+  professional User    @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
+
+  @@index([date, startTime])
+  @@index([professionalId, date])
+  @@index([clientId])
+  @@map("appointments")
+}
+
+model Availability {
+  id             String    @id @default(uuid())
+  professionalId String
+  dayOfWeek      DayOfWeek
+  startTime      String    // Formato HH:MM
+  endTime        String    // Formato HH:MM
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  // Relacionamentos
+  professional User @relation(fields: [professionalId], references: [id])
+
+  @@unique([professionalId, dayOfWeek, startTime])
+  @@map("availability")
+}

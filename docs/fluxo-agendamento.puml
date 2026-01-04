@@ -1,0 +1,50 @@
+@startuml Fluxo de Agendamento
+
+|Cliente|
+start
+:Seleciona serviço;
+
+|Sistema|
+:Valida serviço;
+note right
+  - Verifica se existe
+  - Verifica se está ativo
+end note
+
+:Consulta disponibilidade;
+note right
+  - Busca profissionais
+  - Verifica agenda
+  - Calcula slots livres
+end note
+
+|Cliente|
+:Escolhe data e horário;
+
+|Sistema|
+:Verifica conflito;
+
+if (Horário disponível?) then (Não)
+  |Cliente|
+  :Recebe mensagem de indisponibilidade;
+  :Volta para escolha de horário;
+  stop
+else (Sim)
+  |Sistema|
+  :Registra agendamento;
+  note right
+    Status: SCHEDULED
+    Atribui profissional
+  end note
+  
+  :Envia notificações;
+  
+  |Profissional|
+  :Recebe notificação;
+  
+  |Cliente|
+  :Recebe confirmação;
+  stop
+endif
+
+@enduml

@@ -1,0 +1,49 @@
+@startuml Fluxo de Cancelamento
+
+|Cliente|
+start
+:Solicita cancelamento;
+:Informa motivo;
+
+|Sistema|
+:Valida regras de cancelamento;
+
+if (Agendamento existe?) then (Não)
+  :Retorna erro "Agendamento não encontrado";
+  stop
+endif
+
+if (Cliente é o dono?) then (Não)
+  :Retorna erro "Sem permissão";
+  stop
+endif
+
+if (Status é SCHEDULED?) then (Não)
+  :Retorna erro "Status inválido";
+  stop
+endif
+
+if (Prazo mínimo 24h?) then (Não)
+  :Retorna erro "Prazo mínimo não respeitado";
+  stop
+endif
+
+if (Motivo informado?) then (Não)
+  :Retorna erro "Motivo obrigatório";
+  stop
+endif
+
+:Atualiza status para CANCELLED;
+:Registra motivo;
+:Libera horário na agenda;
+:Envia notificação ao profissional;
+
+|Profissional|
+:Recebe notificação de cancelamento;
+
+|Cliente|
+:Recebe confirmação;
+
+stop
+
+@enduml

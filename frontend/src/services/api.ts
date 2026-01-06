@@ -1,7 +1,16 @@
+import { Appointment, Service } from '@/types';
 import axios from 'axios';
 
+// Base URL da API
+const API_BASE_URL = import.meta.env.VITE_API_URL
+  ? import.meta.env.VITE_API_URL + '/api'
+  : '/api';
+
 const api = axios.create({
-  baseURL: 'http://localhost:3001/api'
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 // Interceptor para adicionar token em todas as requisições
@@ -25,5 +34,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const servicesApi = {
+  getServices: () => api.get<Service[]>('/services'),
+}
+
+export const appointmentsApi = {
+  getAppointments: () => api.get<Appointment[]>('/appointments'),//erro aqui
+  cancelAppointment: (appointmentId: number) => api.delete(`/appointments/${appointmentId}`),
+}
 
 export default api;

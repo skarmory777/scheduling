@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import { servicesApi, appointmentsApi } from '../services/api';
 import type { Service } from '../types';
 
 const Services: React.FC = () => {
@@ -15,9 +15,10 @@ const Services: React.FC = () => {
 
   const loadServices = async () => {
     try {
-      const response = await api.get<Service[]>('/services');
+      const response = await servicesApi.getServices();
       setServices(response.data);
     } catch (err: any) {
+      console.error('Error loading services:', err);
       setError('Erro ao carregar serviços');
     } finally {
       setLoading(false);

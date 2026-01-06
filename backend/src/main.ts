@@ -56,7 +56,7 @@ async function bootstrap() {
   app.use('/api/appointments', createAppointmentRoutes(jwtGuard));
 
   // Health check
-  app.get('/health', (req, res) => {
+  app.get('/api/health', (req, res) => {
     res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
   });
 

@@ -37,11 +37,21 @@ api.interceptors.response.use(
 
 export const servicesApi = {
   getServices: () => api.get<Service[]>('/services'),
+  createService: (data: Partial<Service>) => api.post<Service[]>('/services', data),
 }
 
 export const appointmentsApi = {
-  getAppointments: () => api.get<Appointment[]>('/appointments'),//erro aqui
-  cancelAppointment: (appointmentId: number) => api.delete(`/appointments/${appointmentId}`),
+  getAppointments: () => api.get<Appointment[]>('/appointments'),
+  createAppointment: (data: Partial<Appointment>) => api.post<Appointment>('/appointments', data),
+  cancelAppointment: (appointmentId: string, cancelReason: string) => api.delete(`/appointments/${appointmentId}`, { data: { cancelReason } }),
 }
 
+export const professionalsApi = {
+  getProfessionalsByService: (serviceId: string) => api.get(`/professionals?serviceId=${serviceId}`),
+}
+
+export const availabilityApi = {
+  getAvailability: (professionalId: string, date: string) =>
+    api.get(`/availability?professionalId=${professionalId}&date=${date}`),
+}
 export default api;

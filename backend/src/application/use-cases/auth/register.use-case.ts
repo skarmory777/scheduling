@@ -50,7 +50,8 @@ export class RegisterUseCase {
       {
         id: savedUser.getId()!,
         email: savedUser.getEmail().getValue(),
-        name: savedUser.getName()
+        name: savedUser.getName(),
+        role: savedUser.getRole() ? savedUser.getRole() as string : 'client'
       }
     );
   }

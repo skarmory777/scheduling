@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import api from '../services/api';
+import { appointmentsApi } from '../services/api';
 import type { Appointment } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -19,7 +19,7 @@ const MyAppointments: React.FC = () => {
 
   const loadAppointments = async () => {
     try {
-      const response = await api.get<Appointment[]>('/appointments');
+      const response = await appointmentsApi.getAppointments();
       setAppointments(response.data);
     } catch (err) {
       setError('Erro ao carregar agendamentos');
@@ -35,9 +35,7 @@ const MyAppointments: React.FC = () => {
     }
 
     try {
-      await api.patch(`/appointments/${appointmentId}/cancel`, {
-        cancelReason
-      });
+      await appointmentsApi.cancelAppointment(appointmentId, cancelReason);
       setCancellingId(null);
       setCancelReason('');
       loadAppointments();

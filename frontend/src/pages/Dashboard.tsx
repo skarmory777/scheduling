@@ -33,19 +33,29 @@ export default function Dashboard() {
     setIsLoading(true);
     try {
       const response = await appointmentsApi.getAppointments();
-      console.log('Appointments response:', response);
-      //setAppointments(response.data);
-    } catch (error) {
-      toast.error("Erro ao carregar agendamentos");
+      //console.log('Appointments response:', response);
+      setAppointments(response.data);
       setNotifications([
         { id: 1, title: "Agendamento Confirmado", message: "Seu agendamento de Barba foi confirmado." },
         { id: 2, title: "Promoção Especial", message: "20% de desconto em serviços de Cabelo nesta semana!" },
         { id: 3, title: "Lembrete", message: "Seu agendamento de Corte de Cabelo está chegando." },
       ]);
+    } catch (error) {
+      toast.error("Erro ao carregar agendamentos");
+
     } finally {
       setIsLoading(false);
     }
   };
+
+  // loadNotifications = async () => {
+  //   // Simulação de carregamento de notificações
+  //   setNotifications([
+  //     { id: 1, title: "Agendamento Confirmado", message: "Seu agendamento de Barba foi confirmado." },
+  //     { id: 2, title: "Promoção Especial", message: "20% de desconto em serviços de Cabelo nesta semana!" },
+  //     { id: 3, title: "Lembrete", message: "Seu agendamento de Corte de Cabelo está chegando." },
+  //   ]);
+  // };
 
   useEffect(() => {
     loadAppointments();
@@ -139,11 +149,19 @@ export default function Dashboard() {
 
           <Card className="border-0 shadow-md">
             <CardContent className="pt-6 text-center">
-              <Link href="/booking">
-                <Button className="bg-indigo-600 hover:bg-indigo-700 w-full">
-                  Novo Agendamento
-                </Button>
-              </Link>
+              {user?.role === 'CLIENT' ?
+                <Link href="/booking">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 w-full">
+                    Novo Agendamento
+                  </Button>
+                </Link>
+                :
+                <Link href="/appointments">
+                  <Button className="bg-indigo-600 hover:bg-indigo-700 w-full">
+                    Gerenciar Agendamentos
+                  </Button>
+                </Link>
+              }
             </CardContent>
           </Card>
         </div>

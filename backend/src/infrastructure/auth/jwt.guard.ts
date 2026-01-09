@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { JwtStrategy } from './jwt.strategy';
+import { UserPrismaRepository } from '../database/repositories/user-prisma.repository';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -12,7 +13,7 @@ export interface AuthRequest extends Request {
 export class JwtGuard {
   constructor(private jwtStrategy: JwtStrategy) { }
 
-  protect = (req: AuthRequest, res: Response, next: NextFunction): void => {
+  protect = async (req: AuthRequest, res: Response, next: NextFunction): Promise<void> => {
     const token = this.jwtStrategy.extractTokenFromHeader(req);
 
     if (!token) {
@@ -27,7 +28,20 @@ export class JwtGuard {
       return;
     }
 
-    (req as any).user = payload;
+    const userRepository = new UserPrismaRepository();
+
+    const user = await userRepository.findById(payload.userId);
+    if (!user) {
+      res.status(401).json({ message: 'User not found' });
+      return;
+    }
+
+    req.user = {
+      userId: user.getId()!,
+      email: user.getEmail().getValue(),
+      role: user.getRole() ? user.getRole() as string : 'client'
+    };
+
     next();
   };
 }

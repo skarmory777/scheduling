@@ -15,6 +15,7 @@ import Services from './pages/Services';
 import Booking from './pages/Booking';
 import MyAppointments from './pages/MyAppointments';
 import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -31,8 +32,10 @@ function Router() {
 
           <Route path={"/dashboard"} component={Dashboard} />
           <Route path={"/services"} component={Services} />
-          <Route path={"/booking/:serviceId"} component={Booking} />
+          <Route path={"/booking"} component={Booking} />
+          {/*<Route path={"/booking/:serviceId"} component={Booking} />*/}
           <Route path={"/appointments"} component={MyAppointments} />
+          <Route path={"/admin-dashboard"} component={AdminDashboard} />
           {/* Final fallback route */}
           <Route component={NotFound} />
         </Switch>

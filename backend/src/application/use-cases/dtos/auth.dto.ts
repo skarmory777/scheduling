@@ -43,13 +43,14 @@ export class AuthResponseDto {
     id: string;
     email: string;
     name: string;
+    role: string;
   };
 
   constructor(
     accessToken: string,
     refreshToken: string,
     expiresIn: number,
-    user: { id: string; email: string; name: string }
+    user: { id: string; email: string; name: string; role: string }
   ) {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;

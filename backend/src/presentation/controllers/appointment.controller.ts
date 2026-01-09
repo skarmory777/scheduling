@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppointmentPrismaRepository } from '../../infrastructure/database/repositories/prisma.appointment.repository';
-import { ServicePrismaRepository } from '../../infrastructure/database/repositories/prisma.services.repository';
-import { UserPrismaRepository } from '../../infrastructure/database/repositories/user.prisma.repository';
+import { AppointmentPrismaRepository } from '../../infrastructure/database/repositories/prisma-appointment.repository';
+import { ServicePrismaRepository } from '../../infrastructure/database/repositories/prisma-services.repository';
+import { UserPrismaRepository } from '../../infrastructure/database/repositories/user-prisma.repository';
 import { CheckAvailability } from '../../application/use-cases/appointment/checkAvailability.use-case';
 import { CancelAppointment } from '../../application/use-cases/appointment/cancelAppointment.use-case';
 import { CreateAppointment } from '../../application/use-cases/appointment/createAppointment.use-case';

@@ -29,18 +29,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string) => {
     const response = await api.post<AuthResponse>('/auth/login', { email, password });
-    const { token, user } = response.data;
+    const { accessToken, user } = response.data;
 
-    localStorage.setItem('token', token);
+    localStorage.setItem('token', accessToken);
     localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
   };
 
   const register = async (name: string, email: string, password: string, role: 'CLIENT' | 'PROFESSIONAL') => {
     const response = await api.post<AuthResponse>('/auth/register', { name, email, password, role });
-    const { token, user } = response.data;
+    const { accessToken, user } = response.data;
 
-    localStorage.setItem('token', token);
+    localStorage.setItem('token', accessToken);
     localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
   };

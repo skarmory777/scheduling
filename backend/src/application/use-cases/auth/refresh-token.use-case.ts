@@ -69,7 +69,8 @@ export class RefreshTokenUseCase {
       {
         id: user.getId()!,
         email: user.getEmail().getValue(),
-        name: user.getName()
+        name: user.getName(),
+        role: user.getRole() ? user.getRole() as string : 'client'
       }
     );
   }

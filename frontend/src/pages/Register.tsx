@@ -16,6 +16,7 @@ const Register: React.FC = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
+    //setRole('CLIENT'); // Default role to CLIENT for now
 
     try {
       await register(name, email, password, role);
@@ -90,6 +91,7 @@ const Register: React.FC = () => {
                 onChange={e => setPassword(e.target.value)}
               />
             </div>
+            {/* Role selection */}
             <div>
               <label htmlFor="role" className="block text-sm font-medium text-gray-700">
                 Tipo de Conta

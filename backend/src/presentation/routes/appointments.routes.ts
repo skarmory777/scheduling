@@ -7,7 +7,7 @@ export function createAppointmentRoutes(
 ): Router {
     const router = Router();
     const appointmentController = new AppointmentController();
-    //router.use(jwtGuard.protect);
+    router.use(jwtGuard.protect);
 
     // Rotas de agendamentos (protegidas)
     router.get('/availability', (req, res) =>

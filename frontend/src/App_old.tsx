@@ -6,7 +6,7 @@ import Navbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Services from './pages/Services';
-import Booking from './pages/Booking';
+import Booking from './pages/Booking__';
 import MyAppointments from './pages/MyAppointments';
 
 function App() {

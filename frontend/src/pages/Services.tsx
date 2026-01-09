@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { servicesApi, appointmentsApi } from '../services/api';
+import { servicesApi } from '../services/api';
 import type { Service } from '../types';
 
 const Services: React.FC = () => {

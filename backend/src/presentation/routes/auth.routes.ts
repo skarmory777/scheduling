@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { AuthController } from '../controllers/auth.controller';
 import { JwtGuard } from '../../infrastructure/auth/jwt.guard';
-import { UserPrismaRepository } from '../../infrastructure/database/repositories/user-prisma.repository';
-import { RefreshTokenPrismaRepository } from '../../infrastructure/database/repositories/refresh-token.prisma.repository';
+import { PrismaUserRepository } from '../../infrastructure/database/repositories/user-prisma.repository';
+import { PrismaRefreshTokenRepository } from '../../infrastructure/database/repositories/refresh-token.prisma.repository';
 import { RegisterUseCase } from '../../application/use-cases/auth/register.use-case';
 import { LoginUseCase } from '../../application/use-cases/auth/login.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/auth/refresh-token.use-case';
@@ -15,8 +15,8 @@ export function createAuthRoutes(
   const router = Router();
 
   // Dependency Injection
-  const userRepository = new UserPrismaRepository();
-  const refreshTokenRepository = new RefreshTokenPrismaRepository();
+  const userRepository = new PrismaUserRepository();
+  const refreshTokenRepository = new PrismaRefreshTokenRepository();
   // Use Cases
   const registerUseCase = new RegisterUseCase(userRepository, jwtStrategy);
   const loginUseCase = new LoginUseCase(userRepository, jwtStrategy);

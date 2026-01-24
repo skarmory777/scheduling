@@ -1,4 +1,5 @@
 import { Appointment, Service } from '@/types';
+import { Professional } from '@/types/professional';
 import axios from 'axios';
 
 // Base URL da API
@@ -47,8 +48,17 @@ export const appointmentsApi = {
 }
 
 export const professionalsApi = {
-  getProfessionalsByService: (serviceId: string) => api.get(`/professionals?serviceId=${serviceId}`),
-}
+  getAll: () => api.get<Professional[]>('/professionals'),
+
+  getProfessionalsByService: (serviceId: string) =>
+    api.get<Professional[]>(`/professionals?serviceId=${serviceId}`),
+
+  createProfessional: (data: Partial<Professional>, selectedServices: string[]) =>
+    api.post<Professional>('/professionals', { data, selectedServices }),
+
+  updateProfessional: (id: string, data: Partial<Professional>, selectedServices: string[]) =>
+    api.put<Professional>(`/professionals/${id}`, { data, selectedServices }),
+};
 
 export const availabilityApi = {
   getAvailability: (professionalId: string, date: string) =>

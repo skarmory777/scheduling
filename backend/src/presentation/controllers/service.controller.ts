@@ -1,8 +1,8 @@
 import { Request, Response } from 'express';
-import { ServicePrismaRepository } from '../../infrastructure/database/repositories/prisma-services.repository';
-import { CreateService } from '../../application/use-cases/service/create-service.user-case';
+import { PrismaServiceRepository } from '../../infrastructure/database/repositories/prisma-services.repository';
+import { CreateService } from '../../application/use-cases/service/create-service.use-case';
 
-const serviceRepository = new ServicePrismaRepository();
+const serviceRepository = new PrismaServiceRepository();
 
 export class ServiceController {
   async listActive(req: Request, res: Response): Promise<Response> {

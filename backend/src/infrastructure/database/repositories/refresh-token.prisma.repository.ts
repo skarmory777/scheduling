@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { RefreshTokenRepository } from '../../../core/domain/repositories/refresh-token.repository';
 
-export class RefreshTokenPrismaRepository implements RefreshTokenRepository {
+export class PrismaRefreshTokenRepository implements RefreshTokenRepository {
     private prisma: PrismaClient;
 
     constructor() {

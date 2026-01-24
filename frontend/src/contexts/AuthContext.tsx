@@ -5,11 +5,17 @@ import type { AuthResponse, User } from '../types';
 interface AuthContextData {
   user: User | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, role: 'CLIENT' | 'PROFESSIONAL') => Promise<void>;
+  login: (email: string, password: string) => Promise<User>;
+  register: (
+    name: string,
+    email: string,
+    password: string,
+    role: 'CLIENT' | 'PROFESSIONAL'
+  ) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
 }
+
 
 const AuthContext = createContext<AuthContextData>({} as AuthContextData);
 
@@ -27,22 +33,37 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(false);
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<User> => {
     const response = await api.post<AuthResponse>('/auth/login', { email, password });
     const { accessToken, user } = response.data;
 
     localStorage.setItem('token', accessToken);
     localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
+
+    return user;
   };
 
-  const register = async (name: string, email: string, password: string, role: 'CLIENT' | 'PROFESSIONAL') => {
-    const response = await api.post<AuthResponse>('/auth/register', { name, email, password, role });
+  const register = async (
+    name: string,
+    email: string,
+    password: string,
+    role: 'CLIENT' | 'PROFESSIONAL'
+  ): Promise<User> => {
+    const response = await api.post<AuthResponse>('/auth/register', {
+      name,
+      email,
+      password,
+      role,
+    });
+
     const { accessToken, user } = response.data;
 
     localStorage.setItem('token', accessToken);
     localStorage.setItem('user', JSON.stringify(user));
     setUser(user);
+
+    return user;
   };
 
   const logout = () => {

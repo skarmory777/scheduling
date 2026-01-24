@@ -105,21 +105,19 @@ model ProfessionalService {
 }
 
 model Professional {
-  id             String          @id @default(uuid()) @db.Char(36)
-  userId         String          @unique @db.Char(36)
-  bio            String?         @db.Text
-  specialization String?         @db.VarChar(255)
-  isActive       Boolean         @default(true)
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id        String   @id @default(uuid()) @db.Char(36)
+  userId    String   @unique @db.Char(36)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  notifications  Notification[]
-  user           User            @relation(fields: [userId], references: [id])
-
-  services       ProfessionalService[]
+  notifications Notification[]
+  user          User            @relation(fields: [userId], references: [id])
+  services      ProfessionalService[]
 
   @@map("professionals")
 }
+
 
 model Service {
   id          String   @id @default(uuid())

@@ -16,7 +16,7 @@ const Register: React.FC = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
-    //setRole('CLIENT'); // Default role to CLIENT for now
+    setRole('CLIENT'); // Default role to CLIENT for now
 
     try {
       await register(name, email, password, role);
@@ -92,7 +92,7 @@ const Register: React.FC = () => {
               />
             </div>
             {/* Role selection */}
-            <div>
+            {/* <div>
               <label htmlFor="role" className="block text-sm font-medium text-gray-700">
                 Tipo de Conta
               </label>
@@ -106,7 +106,7 @@ const Register: React.FC = () => {
                 <option value="CLIENT">Cliente</option>
                 <option value="PROFESSIONAL">Profissional</option>
               </select>
-            </div>
+            </div> */}
           </div>
 
           <div>

@@ -1,19 +1,19 @@
 import crypto from 'crypto';
 import { Professional } from '../../../core/domain/entities/professional.entity';
-import { IProfessionalRepository } from '../../../core/domain/repositories/professional.repository';
+import { IProfessionalServiceRepository } from '../../../core/domain/repositories/professional.repository';
 import { IUserRepository } from '../../../core/domain/repositories/user.repository';
 import { IServiceRepository } from '../../../core/domain/repositories/service.repository';
-import { CreateProfessionalDTO } from '../dtos/professional.dto';
+import { ProfessionalServiceDTO } from '../dtos/professional-service.dto';
+import { ProfessionalService } from '../../../core/domain/entities/professional-service.entity';
 
-export class CreateProfessional {
+export class CreateProfessionalService {
     constructor(
-        private professionalRepository: IProfessionalRepository,
+        private professionalServiceRepository: IProfessionalServiceRepository,
         private userRepository: IUserRepository,
         private serviceRepository: IServiceRepository
     ) { }
 
-    async execute(data: CreateProfessionalDTO): Promise<Professional> {
-        // 1. Validar usuário
+    async execute(data: ProfessionalServiceDTO): Promise<ProfessionalService> {
         const user = await this.userRepository.findById(data.userId);
         if (!user) {
             throw new Error('Usuário não encontrado');
@@ -23,12 +23,11 @@ export class CreateProfessional {
             throw new Error('Usuário não é um profissional');
         }
 
-        // 2. Verificar se já existe profissional para este usuário
-        const existingProfessional =
-            await this.professionalRepository.findByUserId(data.userId);
+        const existingProfessionalService =
+            await this.professionalServiceRepository.findPk(data.professionalId, data.serviceId);
 
-        if (existingProfessional) {
-            throw new Error('Profissional já cadastrado para este usuário');
+        if (existingProfessionalService) {
+            throw new Error('Serviço já cadastrado para este profissional');
         }
 
         if (data.serviceId) {
@@ -38,20 +37,16 @@ export class CreateProfessional {
             }
         }
 
-        // 3. Criar profissional
         const now = new Date();
 
-        const professional = new Professional(
+        const professionalService = new ProfessionalService(
             crypto.randomUUID(),
-            data.userId,
-            data.bio ?? null,
-            data.specialization ?? null,
-            true,
+            data.professionalId,
+            data.serviceId,
             now,
             now
         );
 
-        // 4. Persistir
-        return this.professionalRepository.create(professional);
+        return this.professionalServiceRepository.create(professionalService);
     }
 }

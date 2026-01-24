@@ -3,11 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Plus, CheckCircle, XCircle } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useLocation } from "wouter";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,6 +14,7 @@ import { professionalsApi, servicesApi } from "@/services/api";
 import type { Service } from '../types';
 import Navbar from "@/components/Navbar";
 import { Professional } from "@/types/professional";
+
 
 const AdminDashboard: React.FC = () => {
   const [services, setServices] = useState<Service[]>([]);
@@ -73,11 +73,6 @@ const AdminDashboard: React.FC = () => {
     isActive: true,
   });
 
-  // Estados para o modal de atribuição de serviços
-  const [assignServicesDialog, setAssignServicesDialog] = useState(false);
-  const [selectedProfessional, setSelectedProfessional] = useState<Professional | null>(null);
-  const [selectedServices, setSelectedServices] = useState<string[]>([]);
-
   if (!isAuthenticated || user && user.role !== "ADMIN") {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -124,60 +119,14 @@ const AdminDashboard: React.FC = () => {
     });
   };
 
-  // Função para abrir o modal de atribuição de serviços
-  const openAssignServicesModal = (professional: Professional) => {
-    setSelectedProfessional(professional);
-    // Inicializa com os serviços já atribuídos ao profissional (se houver)
-    //setSelectedServices(professional.services?.map(s => s.id) || []);
-    setAssignServicesDialog(true);
-  };
-
-  // Função para alternar a seleção de um serviço
-  const toggleServiceSelection = (serviceId: string) => {
-    setSelectedServices(prev =>
-      prev.includes(serviceId)
-        ? prev.filter(id => id !== serviceId)
-        : [...prev, serviceId]
-    );
-  };
-
-  const updateProfessionalServices = async (professional: Professional, services: string[]) => {
-
-    if (professional.id !== '')
-      return await professionalsApi.updateProfessional(professional.id, professional, services);
-
-    return await professionalsApi.createProfessional(professional, services);
-  }
-
-  // Função para salvar os serviços atribuídos
-  const saveAssignedServices = async () => {
-    if (!selectedProfessional) return;
-
-    try {
-      await updateProfessionalServices(selectedProfessional, selectedServices);
-
-      toast.success("Serviços atribuídos com sucesso!");
-
-      // Atualiza o estado local do profissional
-      setProfessionals(prev => prev.map(pro =>
-        pro.id === selectedProfessional.id
-          ? { ...pro, services: services.filter(s => selectedServices.includes(s.id)) }
-          : pro
-      ));
-
-      setAssignServicesDialog(false);
-      setSelectedProfessional(null);
-      setSelectedServices([]);
-    } catch (err) {
-      toast.error("Erro ao atribuir serviços");
-      console.error(err);
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
       <div className="container mx-auto px-4">
         <Navbar title="Painel Administrativo" />
+        {/* <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Painel Administrativo</h1>
+          <p className="text-gray-600">Gerencie sua clínica ou salão de beleza</p>
+        </div> */}
 
         <Tabs defaultValue="overview" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
@@ -187,7 +136,7 @@ const AdminDashboard: React.FC = () => {
             <TabsTrigger value="settings">Configurações</TabsTrigger>
           </TabsList>
 
-          {/* Overview Tab - mantido igual */}
+          {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Card className="border-0 shadow-md">
@@ -288,7 +237,34 @@ const AdminDashboard: React.FC = () => {
             </Card>
           </TabsContent>
 
-          {/* Professionals Tab - MODIFICADO */}
+          {/* Professionals Tab */}
+          {/* <TabsContent value="professionals" className="space-y-6">
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle>Gerenciar Profissionais</CardTitle>
+                <CardDescription>Visualize e gerencie os profissionais</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {professionals.length > 0 ? (
+                  <div className="space-y-3">
+                    {professionals.map(pro => (
+                      <div key={pro.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{pro.user.name}</h3>
+                          <p className="text-sm text-gray-600">{pro.specialization}</p>
+                          <p className="text-sm text-gray-500">{pro.phone}</p>
+                        </div>
+                        <Badge className="bg-blue-100 text-blue-800">Ativo</Badge>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-600 py-8">Nenhum profissional cadastrado</p>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent> */}
+          {/* Professionals Tab */}
           <TabsContent value="professionals" className="space-y-6">
             <Card className="border-0 shadow-lg">
               <CardHeader>
@@ -300,39 +276,25 @@ const AdminDashboard: React.FC = () => {
                   <div className="space-y-3">
                     {professionals.map(pro => (
                       <div key={pro.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50">
-                        <div className="space-y-2 flex-1">
+                        <div className="space-y-2">
                           <div>
                             <h3 className="font-semibold text-gray-900">{pro.user?.name || "Nome não disponível"}</h3>
                             <p className="text-sm text-gray-600">{pro.user?.email || "Email não disponível"}</p>
                             <p className="text-sm text-gray-500">ID: {pro.id}</p>
                           </div>
-                          {/* <div className="flex flex-wrap gap-2">
-                            {pro.services && pro.services.length > 0 ? (
-                              pro.services.map(service => (
-                                <Badge key={service.id} variant="secondary" className="text-xs">
-                                  {service.name}
-                                </Badge>
-                              ))
-                            ) : (
-                              <span className="text-sm text-gray-500 italic">Nenhum serviço atribuído</span>
-                            )}
-                          </div> */}
+                          <div className="flex items-center gap-4 text-sm">
+                            <span className={`px-2 py-1 rounded ${pro.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                              {pro.isActive ? "Ativo" : "Inativo"}
+                            </span>
+                          </div>
                         </div>
-                        <div className="flex flex-col items-end gap-2 ml-4">
+                        <div className="flex flex-col items-end gap-2">
                           <Badge className={pro.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
                             {pro.isActive ? "Ativo" : "Inativo"}
                           </Badge>
-                          {!pro.isActive && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => openAssignServicesModal(pro)}
-                              className="mt-2"
-                            >
-                              <Plus className="w-4 h-4 mr-2" />
-                              Atribuir Serviços
-                            </Button>
-                          )}
+                          <Badge variant="outline" className="text-xs">
+                            {pro.user?.role === "PROFESSIONAL" ? "Profissional" : pro.user?.role}
+                          </Badge>
                         </div>
                       </div>
                     ))}
@@ -344,109 +306,40 @@ const AdminDashboard: React.FC = () => {
             </Card>
           </TabsContent>
 
-          {/* Settings Tab - mantido igual */}
+          {/* Settings Tab */}
           <TabsContent value="settings" className="space-y-6">
-            {/* ... código existente ... */}
+            <Card className="border-0 shadow-lg">
+              <CardHeader>
+                <CardTitle>Horário de Funcionamento</CardTitle>
+                <CardDescription>Configure os horários de funcionamento</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {workingHours.length > 0 ? (
+                  <div className="space-y-3">
+                    {workingHours.map(hours => (
+                      <div key={hours.id} className="flex items-center justify-between p-4 border rounded-lg">
+                        <div>
+                          <h3 className="font-semibold text-gray-900">{dayNames[hours.dayOfWeek]}</h3>
+                          {hours.isOpen ? (
+                            <p className="text-sm text-gray-600">{hours.startTime} - {hours.endTime}</p>
+                          ) : (
+                            <p className="text-sm text-gray-600">Fechado</p>
+                          )}
+                        </div>
+                        <Badge className={hours.isOpen ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}>
+                          {hours.isOpen ? "Aberto" : "Fechado"}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-center text-gray-600 py-8">Nenhum horário configurado</p>
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
-
-      {/* Modal para atribuir serviços */}
-      <Dialog open={assignServicesDialog} onOpenChange={setAssignServicesDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Atribuir Serviços ao Profissional</DialogTitle>
-            <DialogDescription>
-              Selecione os serviços que {selectedProfessional?.user?.name} pode realizar
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <h3 className="font-semibold text-gray-900 mb-2">Informações do Profissional:</h3>
-              <p><strong>Nome:</strong> {selectedProfessional?.user?.name}</p>
-              <p><strong>Email:</strong> {selectedProfessional?.user?.email}</p>
-              <p><strong>Status:</strong>
-                <Badge className={`ml-2 ${selectedProfessional?.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {selectedProfessional?.isActive ? "Ativo" : "Inativo"}
-                </Badge>
-              </p>
-            </div>
-
-            <div className="border rounded-lg p-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Serviços Disponíveis</h3>
-
-              {services.length > 0 ? (
-                <div className="space-y-3 max-h-96 overflow-y-auto">
-                  {services.map(service => (
-                    <div
-                      key={service.id}
-                      className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${selectedServices.includes(service.id)
-                        ? 'bg-indigo-50 border-indigo-200'
-                        : 'hover:bg-gray-50'
-                        }`}
-                      onClick={() => toggleServiceSelection(service.id)}
-                    >
-                      <div className="flex items-center">
-                        <div className={`w-6 h-6 rounded-full border mr-3 flex items-center justify-center ${selectedServices.includes(service.id)
-                          ? 'bg-indigo-600 border-indigo-600'
-                          : 'border-gray-300'
-                          }`}>
-                          {selectedServices.includes(service.id) && (
-                            <CheckCircle className="w-4 h-4 text-white" />
-                          )}
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">{service.name}</h4>
-                          <p className="text-sm text-gray-600">{service.description}</p>
-                          <div className="flex gap-4 mt-1 text-sm text-gray-500">
-                            <span>{service.duration} min</span>
-                            <span>R$ {service.price.toFixed(2)}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <Badge className="bg-green-100 text-green-800">Ativo</Badge>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-gray-600 py-4">Nenhum serviço cadastrado</p>
-              )}
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <div className="flex-shrink-0 mt-0.5">
-                  <svg className="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                  </svg>
-                </div>
-                <div className="ml-3">
-                  <h3 className="text-sm font-medium text-blue-800">Informação</h3>
-                  <div className="mt-2 text-sm text-blue-700">
-                    <p>Após atribuir os serviços, o profissional poderá ser ativado novamente.</p>
-                    <p className="mt-1"><strong>Serviços selecionados:</strong> {selectedServices.length}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAssignServicesDialog(false)}>
-              Cancelar
-            </Button>
-            <Button
-              className="bg-indigo-600 hover:bg-indigo-700"
-              onClick={saveAssignedServices}
-              disabled={selectedServices.length === 0}
-            >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Salvar Serviços ({selectedServices.length})
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

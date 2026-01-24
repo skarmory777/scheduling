@@ -4,7 +4,7 @@ import { IUserRepository } from '../../../core/domain/repositories/user.reposito
 import { Email } from '../../../core/domain/value-objects/email.vo';
 import { Password } from '../../../core/domain/value-objects/password.vo';
 
-export class UserPrismaRepository implements IUserRepository {
+export class PrismaUserRepository implements IUserRepository {
     private prisma: PrismaClient;
 
     constructor() {
@@ -30,8 +30,8 @@ export class UserPrismaRepository implements IUserRepository {
 
         return new User(
             new Email(userData.email),
-            Password.create(userData.password, true),
             userData.name,
+            Password.create(userData.password, true),
             userData.role as Role ?? Role.CLIENT,
             userData.isActive,
             userData.id,
@@ -60,8 +60,8 @@ export class UserPrismaRepository implements IUserRepository {
 
         return new User(
             new Email(userData.email),
-            Password.create(userData.password, true),
             userData.name,
+            Password.create(userData.password, true),
             userData.role as Role ?? Role.CLIENT,
             userData.isActive,
             userData.id,
@@ -72,10 +72,14 @@ export class UserPrismaRepository implements IUserRepository {
     }
 
     async save(user: User): Promise<User> {
+        const password = user.getPassword()
+            ? await user.getPassword()!.getHashedValue()
+            : "";
+
         const userData = await this.prisma.user.create({
             data: {
                 email: user.getEmail().getValue(),
-                password: (await user.getPassword().getHashedValue()),
+                password,
                 name: user.getName(),
                 isActive: user.getIsActive(),
                 role: user.getRole(),
@@ -119,8 +123,8 @@ export class UserPrismaRepository implements IUserRepository {
 
         return new User(
             new Email(createdUser.email),
-            Password.create(createdUser.password, true),
             createdUser.name,
+            Password.create(createdUser.password, true),
             userData.role as Role ?? Role.CLIENT,
             createdUser.isActive,
             createdUser.id,
@@ -136,11 +140,15 @@ export class UserPrismaRepository implements IUserRepository {
             throw new Error('User ID is required for update');
         }
 
+        const password = user.getPassword()
+            ? await user.getPassword()!.getHashedValue()
+            : "";
+
         const userData = await this.prisma.user.update({
             where: { id: userId },
             data: {
                 email: user.getEmail().getValue(),
-                password: (await user.getPassword().getHashedValue()),
+                password,
                 name: user.getName(),
                 role: user.getRole(),
                 isActive: user.getIsActive(),
@@ -197,8 +205,8 @@ export class UserPrismaRepository implements IUserRepository {
 
         return new User(
             new Email(updatedUser.email),
-            Password.create(updatedUser.password, true),
             updatedUser.name,
+            Password.create(updatedUser.password, true),
             userData.role as Role ?? Role.CLIENT,
             updatedUser.isActive,
             updatedUser.id,
@@ -216,15 +224,18 @@ export class UserPrismaRepository implements IUserRepository {
 
     async findProfessionals(): Promise<User[]> {
         const users = await this.prisma.user.findMany({
-            where: { role: 'PROFESSIONAL' }
+            where: { role: 'PROFESSIONAL' },
+            include: {
+                professional: true // Inclui os dados da relação
+            }
         });
 
         return users.map(
             user =>
                 new User(
                     new Email(user.email),
-                    Password.create(user.password, true),
                     user.name,
+                    Password.create('', true),
                     Role.PROFESSIONAL,
                     user.isActive,
                     user.id,

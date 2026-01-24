@@ -1,16 +1,16 @@
 import { Response } from 'express';
 import { PrismaNotificationRepository } from '../../infrastructure/database/repositories/prisma-notification.repository';
 import { AuthRequest } from '../../infrastructure/auth/jwt.guard';
-import { UserPrismaRepository } from '../../infrastructure/database/repositories/user-prisma.repository';
+import { PrismaUserRepository } from '../../infrastructure/database/repositories/user-prisma.repository';
 import { CreateNotificationUseCase } from '../../application/use-cases/notification/create-notification.usecase';
 
 export class NotificationController {
     private notificationRepository: PrismaNotificationRepository;
-    private userRepository: UserPrismaRepository;
+    private userRepository: PrismaUserRepository;
 
     constructor() {
         this.notificationRepository = new PrismaNotificationRepository();
-        this.userRepository = new UserPrismaRepository();
+        this.userRepository = new PrismaUserRepository();
     }
 
     async create(req: AuthRequest, res: Response): Promise<Response> {

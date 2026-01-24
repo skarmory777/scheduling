@@ -1,19 +1,16 @@
-export interface CreateProfessionalDTO {
-    userId: string;
-    bio?: string;
-    specialization?: string;
-    serviceId: string;
+import { IsString, IsBoolean, IsOptional } from 'class-validator';
+
+export class CreateProfessionalDto {
+    @IsString()
+    userId!: string;
+
+    @IsOptional()
+    @IsBoolean()
+    isActive?: boolean;
 }
-export interface UpdateProfessionalDTO {
-    bio?: string;
-    specialization?: string;
+
+export class UpdateProfessionalDto {
+    @IsOptional()
+    @IsBoolean()
+    isActive?: boolean;
 }
-export interface ProfessionalResponseDTO {
-    id: string;
-    userId: string;
-    bio: string | null;
-    specialization: string | null;
-    isActive: boolean;
-    createdAt: Date;
-    updatedAt: Date;
-}   

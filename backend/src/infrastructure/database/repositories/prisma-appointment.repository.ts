@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { IAppointmentRepository } from '../../../core/domain/repositories/appointment.repository';
 import { Appointment, AppointmentStatus } from '../../../core/domain/entities/appointment.entity';
 
-export class AppointmentPrismaRepository implements IAppointmentRepository {
+export class PrismaAppointmentRepository implements IAppointmentRepository {
   //constructor(private prisma: PrismaClient) { }
   private prisma: PrismaClient;
 

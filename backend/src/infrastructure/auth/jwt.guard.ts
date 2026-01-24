@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { JwtStrategy } from './jwt.strategy';
-import { UserPrismaRepository } from '../database/repositories/user-prisma.repository';
+import { PrismaUserRepository } from '../database/repositories/user-prisma.repository';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -28,7 +28,7 @@ export class JwtGuard {
       return;
     }
 
-    const userRepository = new UserPrismaRepository();
+    const userRepository = new PrismaUserRepository();
 
     const user = await userRepository.findById(payload.userId);
     if (!user) {

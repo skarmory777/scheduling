@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import { IProfessionalRepository } from '../../../core/domain/repositories/professional.repository';
 import { Professional } from '../../../core/domain/entities/professional.entity';
+import { User } from '../../../core/domain/entities/user.entity';
 
 export class PrismaProfessionalRepository implements IProfessionalRepository {
     private prisma: PrismaClient;
@@ -8,44 +9,11 @@ export class PrismaProfessionalRepository implements IProfessionalRepository {
     constructor() {
         this.prisma = new PrismaClient();
     }
-
-    async findByUserId(userId: string) {
-        const data = await this.prisma.professional.findUnique({ where: { userId } });
-        return data
-            ? new Professional(
-                data.id,
-                data.userId,
-                data.bio,
-                data.specialization,
-                data.isActive,
-                data.createdAt,
-                data.updatedAt
-            )
-            : null;
-    }
-
-    async findById(id: string): Promise<Professional | null> {
-        const data = await this.prisma.professional.findUnique({ where: { id } });
-        return data
-            ? new Professional(
-                data.id,
-                data.userId,
-                data.bio,
-                data.specialization,
-                data.isActive,
-                data.createdAt,
-                data.updatedAt
-            )
-            : null;
-    }
-
-    async create(professional: Professional) {
-        const data = await this.prisma.professional.create({
+    async save(professional: Professional): Promise<Professional> {
+        const saved = await this.prisma.professional.create({
             data: {
                 id: professional.id,
                 userId: professional.userId,
-                bio: professional.bio,
-                specialization: professional.specialization,
                 isActive: professional.isActive,
                 createdAt: professional.createdAt,
                 updatedAt: professional.updatedAt,
@@ -53,35 +21,91 @@ export class PrismaProfessionalRepository implements IProfessionalRepository {
         });
 
         return new Professional(
-            data.id,
-            data.userId,
-            data.bio,
-            data.specialization,
-            data.isActive,
-            data.createdAt,
-            data.updatedAt
+            saved.id,
+            saved.userId,
+            undefined,
+            saved.isActive,
+            saved.createdAt,
+            saved.updatedAt
         );
     }
 
-    async update(professional: Professional) {
-        const data = await this.prisma.professional.update({
+    async findById(id: string): Promise<Professional | null> {
+        const found = await this.prisma.professional.findUnique({
+            where: { id },
+        });
+
+        if (!found) return null;
+
+        return new Professional(
+            found.id,
+            found.userId,
+            undefined,
+            found.isActive,
+            found.createdAt,
+            found.updatedAt
+        );
+    }
+
+    async findByUserId(userId: string): Promise<Professional | null> {
+        const found = await this.prisma.professional.findUnique({
+            where: { userId },
+        });
+
+        if (!found) return null;
+
+        return new Professional(
+            found.id,
+            found.userId,
+            undefined,
+            found.isActive,
+            found.createdAt,
+            found.updatedAt
+        );
+    }
+
+    async update(professional: Professional): Promise<Professional> {
+        const updated = await this.prisma.professional.update({
             where: { id: professional.id },
             data: {
-                bio: professional.bio,
-                specialization: professional.specialization,
                 isActive: professional.isActive,
-                updatedAt: new Date(),
+                updatedAt: professional.updatedAt,
             },
         });
 
         return new Professional(
-            data.id,
-            data.userId,
-            data.bio,
-            data.specialization,
-            data.isActive,
-            data.createdAt,
-            data.updatedAt
+            updated.id,
+            updated.userId,
+            undefined,
+            updated.isActive,
+            updated.createdAt,
+            updated.updatedAt
+        );
+    }
+
+    async delete(id: string): Promise<void> {
+        await this.prisma.professional.delete({
+            where: { id },
+        });
+    }
+
+    async findAll(limit: number, offset: number): Promise<Professional[]> {
+        const professionals = await this.prisma.professional.findMany({
+            skip: offset,
+            take: limit,
+            orderBy: { createdAt: 'desc' },
+        });
+
+        return professionals.map(
+            (p) =>
+                new Professional(
+                    p.id,
+                    p.userId,
+                    undefined,
+                    p.isActive,
+                    p.createdAt,
+                    p.updatedAt
+                )
         );
     }
 }

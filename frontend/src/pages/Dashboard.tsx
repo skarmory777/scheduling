@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { useAuth } from '../contexts/AuthContext';
 import { appointmentsApi } from '../services/api';
 import type { Appointment } from '@/types';
+import Navbar from "@/components/Navbar";
 
 interface Notification {
   id: number;
@@ -121,11 +122,12 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
       <div className="container mx-auto px-4">
+        <Navbar title="Dashboard" />
+
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Meu Dashboard</h1>
-          <p className="text-gray-600">Bem-vindo, {user?.name}!</p>
-        </div>
+        {/* <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
+        </div> */}
 
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">

@@ -12,15 +12,9 @@ import { toast } from "sonner";
 import { useLocation } from "wouter";
 import { Loader2, ArrowRight, Check } from "lucide-react";
 import { useAuth } from '@/contexts/AuthContext';
+import Navbar from '@/components/Navbar';
 
 type BookingStep = "service" | "professional" | "datetime" | "confirmation" | "success";
-
-// Mocked data
-const mockServices = [
-  { id: 1, name: "Corte de Cabelo", description: "Corte masculino", durationMinutes: 30, price: 40 },
-  { id: 2, name: "Barba", description: "Barba completa", durationMinutes: 20, price: 25 },
-  { id: 3, name: "Corte Infantil", description: "Corte para crianças", durationMinutes: 25, price: 30 },
-];
 
 const mockProfessionals = [
   { id: 1, name: "João Silva", specialization: "Barbeiro", phone: "1111-1111" },
@@ -126,6 +120,8 @@ const Booking: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8">
       <div className="container mx-auto px-4">
+        <Navbar title="Agendamento" />
+
         {/* Progress Indicator */}
         <div className="mb-8">
           <div className="flex justify-between items-center">
@@ -303,20 +299,28 @@ const Booking: React.FC = () => {
 
             {/* Buttons */}
             <div className="flex justify-between pt-6 border-t">
-              <Button
-                variant="outline"
-                onClick={() => {
-                  const steps: BookingStep[] = ["service", "professional", "datetime", "confirmation"];
-                  const currentIndex = steps.indexOf(currentStep);
-                  if (currentIndex > 0) {
-                    setCurrentStep(steps[currentIndex - 1]);
-                  }
-                }}
-                disabled={currentStep === "service"}
-              >
-                Voltar
-              </Button>
-
+              {currentStep === "service" ? (
+                <Button onClick={() => navigate("/dashboard")}>
+                  Dashboard
+                </Button>
+              ) :
+                (
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const steps: BookingStep[] = ["service", "professional", "datetime", "confirmation"];
+                      const currentIndex = steps.indexOf(currentStep);
+                      console.log(currentIndex);
+                      if (currentIndex > 0) {
+                        setCurrentStep(steps[currentIndex - 1]);
+                      }
+                    }}
+                  //disabled={currentStep === "service"}
+                  >
+                    Voltar
+                  </Button>
+                )
+              }
               {currentStep === "confirmation" ? (
                 <Button
                   onClick={handleConfirm}

@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { IServiceRepository } from '../../../core/domain/repositories/service.repository';
 import { Service } from '../../../core/domain/entities/service.entity';
 
-export class ServicePrismaRepository implements IServiceRepository {
+export class PrismaServiceRepository implements IServiceRepository {
   //constructor(private prisma: PrismaClient) { }
   private prisma: PrismaClient;
 

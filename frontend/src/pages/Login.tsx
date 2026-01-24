@@ -9,7 +9,7 @@ const Login: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const { login, user, isAuthenticated } = useAuth();
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,8 +18,9 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
-      if (user?.role === 'ADMIN' && isAuthenticated) {
+      const loggedUser = await login(email, password);
+
+      if (loggedUser?.role === 'ADMIN') {
         navigate('/admin-dashboard');
         return;
       }

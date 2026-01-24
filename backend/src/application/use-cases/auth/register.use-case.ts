@@ -22,8 +22,8 @@ export class RegisterUseCase {
     // Create user entity
     const user = new User(
       new Email(email),
-      Password.create(password),
       name,
+      Password.create(password, true),
       role as Role
     );
 

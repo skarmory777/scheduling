@@ -10,7 +10,7 @@ export enum Role {
 export class User {
   public id?: string;
   public email: Email;
-  private password: Password;
+  private password?: Password;
   public name: string;
   public role?: Role;
   private isActive: boolean;
@@ -20,8 +20,8 @@ export class User {
 
   constructor(
     email: Email,
-    password: Password,
     name: string,
+    password?: Password,
     role?: Role,
     isActive = true,
     id?: string,
@@ -49,7 +49,7 @@ export class User {
     return this.email;
   }
 
-  getPassword(): Password {
+  getPassword(): Password | undefined {
     return this.password;
   }
 
@@ -79,11 +79,11 @@ export class User {
 
   // Business methods
   async validatePassword(plainPassword: string): Promise<boolean> {
-    return this.password.compare(plainPassword);
+    return this.password ? this.password?.compare(plainPassword) : false;
   }
 
   async hashPassword(): Promise<void> {
-    const hashedPassword = await this.password.getHashedValue();
+    const hashedPassword = this.password ? await this.password?.getHashedValue() : '';
     this.password = Password.create(hashedPassword, true);
   }
 

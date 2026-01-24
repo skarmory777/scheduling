@@ -3,15 +3,21 @@ export class ProfessionalService {
         public readonly id: string,
         public readonly professionalId: string,
         public readonly serviceId: string,
-        public price: number,
-        public durationInMinutes: number,
-        public readonly createdAt: Date,
-        public updatedAt: Date
+        public readonly createdAt: Date = new Date(),
+        public updatedAt: Date = new Date()
     ) { }
 
-    updateDetails(price: number, durationInMinutes: number) {
-        this.price = price;
-        this.durationInMinutes = durationInMinutes;
-        this.updatedAt = new Date();
+    static create(
+        professionalId: string,
+        serviceId: string
+    ): ProfessionalService {
+        const id = crypto.randomUUID();
+        return new ProfessionalService(
+            id,
+            professionalId,
+            serviceId,
+            new Date(),
+            new Date()
+        );
     }
 }
